@@ -2,6 +2,38 @@
 
 using namespace std;
 
+// with memoisation 
+int lcs_memo(string a,string b,int** output)
+{
+    int m = a.size();
+    int n = b.size();
+    if(m == 0 || n ==0)
+    {
+        output[0][0] = 0;
+        return 0;
+    }
+    if(output[m][n] !=-1)
+    {
+        return output[m][n];
+    }
+    if(a[0] == b[0])
+    {
+        output[m][n] = 1+lcs_memo(a.substr(1),b.substr(1),output);
+        return output[m][n];
+    }
+    int x = lcs_memo(a,b.substr(1),output);
+    
+    int y = lcs_memo(a.substr(1),b,output);
+    
+    int z = lcs_memo(a.substr(1),b.substr(1),output);
+    
+    int ans = max(x,max(y,z));
+    
+    output[m][n] = ans;
+    return ans;
+}
+
+// normal recusrsion (with lot of repetitive recursive calls)
 int lcs(string a,string b)
 {
     if(a[0] == '\0' || b[0] == '\0')
@@ -23,5 +55,17 @@ int main()
 {
 string a,b;
 cin>>a>>b;
-cout<<lcs(a,b);
+cout<<lcs(a,b)<<endl;
+int **output = new int*[a.size()+1];
+for(int i=0;i<=a.size();i++)
+{
+    output[i] = new int[b.size()+1];
+    for(int j=0;j<=b.size();j++)
+    {
+        output[i][j] = -1;
+    }
+}
+int l =lcs_memo(a,b,output);
+
+cout<<output[a.size()-1][b.size()-1];
 }
